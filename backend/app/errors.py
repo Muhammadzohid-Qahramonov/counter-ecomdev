@@ -97,6 +97,8 @@ def register_error_handlers(app: FastAPI) -> None:
         message = exc.detail if isinstance(exc.detail, str) else "HTTP xato"
         if exc.status_code == 404 and message == "Not Found":
             message = "Bunday manzil topilmadi"
+        elif exc.status_code == 405:
+            message = "Bu manzil uchun bunday HTTP metod qo'llanmaydi"
         return error_response(exc.status_code, code, message)
 
     @app.exception_handler(Exception)
