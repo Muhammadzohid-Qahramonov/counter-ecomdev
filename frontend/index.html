@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>To'lovlar va qarzdorlar</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <h1>O'quv markazi to'lovlari</h1>
+  </header>
+
+  <main class="container">
+    <section class="card" aria-labelledby="debtors-title">
+      <div class="section-head">
+        <h2 id="debtors-title">Qarzdorlar</h2>
+        <label class="month-picker">
+          <span>Oy</span>
+          <input type="month" id="month" required>
+        </label>
+      </div>
+
+      <p id="debtors-summary" class="summary" hidden></p>
+      <p id="debtors-status" class="status" role="status" aria-live="polite"></p>
+      <ul id="debtors-list" class="debtors"></ul>
+    </section>
+
+    <section class="card" aria-labelledby="payment-title">
+      <h2 id="payment-title">To'lov qo'shish</h2>
+
+      <form id="payment-form" class="form" novalidate>
+        <label class="field">
+          <span>O'quvchi</span>
+          <select id="student" required>
+            <option value="">Yuklanmoqda...</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Summa (so'm)</span>
+          <input type="number" id="amount" inputmode="numeric" min="1" step="1" placeholder="Masalan, 400000" required>
+        </label>
+
+        <label class="field">
+          <span>Sana</span>
+          <input type="date" id="date" required>
+        </label>
+
+        <button type="submit" id="submit-btn" class="button">Saqlash</button>
+        <p id="form-message" class="status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+:root {
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --text: #1f2328;
+  --muted: #656d76;
+  --border: #d8dee4;
+  --primary: #1f6feb;
+  --primary-hover: #1a5fcc;
+  --danger: #cf222e;
+  --danger-bg: #ffebe9;
+  --success: #1a7f37;
+  --success-bg: #dafbe1;
+  --radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--text);
+  background: var(--bg);
+}
+
+h1,
+h2 {
+  margin: 0;
+}
+
+h1 {
+  font-size: 1.15rem;
+}
+
+h2 {
+  font-size: 1.1rem;
+}
+
+.header {
+  padding: 14px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.container {
+  display: grid;
+  gap: 16px;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.card {
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.month-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+
+input,
+select,
+.button {
+  font: inherit;
+  /* 16px+ shrift iOS'da input bosilganda sahifa kattalashib ketmasligi uchun */
+  font-size: 1rem;
+}
+
+input,
+select {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 10px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.month-picker input {
+  width: auto;
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+  border-color: var(--primary);
+}
+
+.summary {
+  margin: 12px 0 0;
+  color: var(--muted);
+}
+
+.summary strong {
+  color: var(--danger);
+}
+
+.status {
+  margin: 12px 0 0;
+  color: var(--muted);
+}
+
+.status:empty {
+  display: none;
+}
+
+.status.error {
+  padding: 10px 12px;
+  color: var(--danger);
+  background: var(--danger-bg);
+  border-radius: 8px;
+}
+
+.status.success {
+  padding: 10px 12px;
+  color: var(--success);
+  background: var(--success-bg);
+  border-radius: 8px;
+}
+
+.debtors {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.debtor {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+
+.debtor:first-child {
+  border-top: none;
+}
+
+.debtor-name {
+  font-weight: 600;
+}
+
+.debtor-meta {
+  margin-top: 2px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.debtor-meta a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.debtor-amount {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.debtor-debt {
+  font-weight: 600;
+  color: var(--danger);
+  white-space: nowrap;
+}
+
+.debtor-paid {
+  font-size: 0.85rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.form {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.field {
+  display: grid;
+  gap: 4px;
+}
+
+.field span {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.button {
+  min-height: 44px;
+  padding: 10px 16px;
+  font-weight: 600;
+  color: #ffffff;
+  background: var(--primary);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: var(--primary-hover);
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.form .status {
+  margin: 0;
+}
+
+/* Planshet va kompyuter: ikki ustun, forma o'ng tomonda */
+@media (min-width: 800px) {
+  .container {
+    grid-template-columns: 1fr 340px;
+    align-items: start;
+  }
+}
