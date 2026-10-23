@@ -1,4 +1,4 @@
-from datetime import date
+import datetime as dt
 
 from sqlalchemy import Date, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -17,7 +17,7 @@ class Student(Base):
     # Pul butun so'mda saqlanadi: float'dagi yaxlitlash xatolari bo'lmaydi
     monthly_fee: Mapped[int] = mapped_column(Integer, nullable=False)
     # Qaysi oydan boshlab to'lov talab qilinishini bilish uchun (Toshkent sanasi)
-    created_on: Mapped[date] = mapped_column(Date, nullable=False, default=today_tashkent)
+    created_on: Mapped[dt.date] = mapped_column(Date, nullable=False, default=today_tashkent)
 
     payments: Mapped[list["Payment"]] = relationship(
         back_populates="student",
@@ -35,6 +35,6 @@ class Payment(Base):
     )
     amount: Mapped[int] = mapped_column(Integer, nullable=False)
     # To'lov sanasi Toshkent vaqti bo'yicha kalendar kuni (vaqtsiz)
-    date: Mapped[date] = mapped_column(Date, nullable=False, index=True)
+    date: Mapped[dt.date] = mapped_column(Date, nullable=False, index=True)
 
     student: Mapped[Student] = relationship(back_populates="payments")
