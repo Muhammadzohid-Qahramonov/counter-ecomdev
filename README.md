@@ -1,96 +1,101 @@
-# O'quv markazi to'lovlari
+# Мини-учёт оплат учебного центра
 
-O'quv markazi uchun to'lovlarni hisobga olish tizimi: o'quvchilar va ularning
-oylik to'lov summasi saqlanadi, har bir to'lov yoziladi, tanlangan oy uchun
-qarzdorlar ro'yxati (kim, qancha to'lagan, qancha qarz) hisoblanadi.
+[O'zbekcha versiya](README.uz.md)
 
-## Tuzilma
+Система учёта оплат учебного центра: хранит учеников и их месячную сумму
+оплаты, записывает каждую оплату и считает должников за выбранный месяц
+(кто, сколько заплатил и сколько должен).
+
+Тестовое задание Ecomdev: часть 1 (API), часть 2 — вариант Б (веб-страница),
+часть 3 (этот README). Всё из частей 1–3 сделано.
+
+## Структура
 
 ```
-backend/    Python API (FastAPI + SQLAlchemy + SQLite)
-frontend/   Bitta sahifali veb-interfeys (HTML + CSS + vanilla JS)
+backend/    API на Python (FastAPI + SQLAlchemy + SQLite)
+frontend/   Одностраничный веб-интерфейс (HTML + CSS + vanilla JS)
 ```
 
-- **backend/** — barcha ma'lumot va biznes-logika shu yerda: validatsiya,
-  bazaga yozish, qarzdorlarni hisoblash. Frontend'siz ham curl/Swagger orqali
-  to'liq ishlatish mumkin.
-- **frontend/** — build kerak emas, oddiy statik fayllar. Backend'ga `fetch`
-  orqali murojaat qiladi; backend manzili `frontend/app.js` boshidagi
-  `API_URL` o'zgaruvchisida.
+- **backend/** — все данные и бизнес-логика: валидация, запись в БД, расчёт
+  должников. Полностью работает и без фронтенда — через curl или Swagger.
+- **frontend/** — статические файлы без сборки. Обращается к backend через
+  `fetch`; адрес backend задан одной переменной `API_URL` в начале
+  `frontend/app.js`. Тексты интерфейса — на узбекском языке.
 
 ```
 backend/
   app/
-    main.py            FastAPI ilovasi, CORS, router'larni ulash
+    main.py            приложение FastAPI, CORS, подключение роутеров
     database.py        engine, session, Base, get_db
     models.py          Student, Payment
-    schemas.py         Pydantic sxemalari va validatsiya
-    errors.py          markazlashgan xato ishlovchi
-    timezone.py        Toshkent vaqti (UTC+5) yordamchilari
+    schemas.py         Pydantic-схемы и валидация
+    errors.py          централизованный обработчик ошибок
+    timezone.py        время по Ташкенту (UTC+5)
     routers/           students.py, payments.py, debtors.py
     services/
-      debtors.py       qarzdorlarni hisoblash logikasi
+      debtors.py       логика расчёта должников
   tests/test_debtors.py
-  seed.py              boshlang'ich ma'lumot
+  seed.py              начальные данные
   requirements.txt
   .env.example
 frontend/
   index.html  style.css  app.js
 ```
 
-## Noldan ishga tushirish
+## Запуск с нуля
 
-Python 3.11+ kerak. Backend buyruqlari `backend/` papkasi ichida bajariladi.
+Нужен Python 3.11+. Команды backend выполняются внутри папки `backend/`.
 
 ```bash
 cd backend
 ```
 
-Virtual muhit yaratish:
+Создать виртуальное окружение:
 
 ```bash
 python -m venv .venv
 ```
 
-Uni faollashtirish (Linux/macOS):
+Активировать его (Linux/macOS):
 
 ```bash
 source .venv/bin/activate
 ```
 
-Uni faollashtirish (Windows):
+Активировать его (Windows):
 
 ```bash
 .venv\Scripts\activate
 ```
 
-Kutubxonalarni o'rnatish:
+Установить зависимости:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Sozlamalar fayli (Windows'da: `copy .env.example .env`):
+Файл настроек (в Windows: `copy .env.example .env`):
 
 ```bash
 cp .env.example .env
 ```
 
-Bazani boshlang'ich ma'lumot bilan to'ldirish (bazani tozalab qayta yozadi):
+Заполнить БД начальными данными — 10 учеников и оплаты за последние 3 месяца
+(скрипт очищает БД и заполняет заново):
 
 ```bash
 python seed.py
 ```
 
-Serverni ishga tushirish:
+Запустить сервер:
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-API: http://127.0.0.1:8000, Swagger hujjati: http://127.0.0.1:8000/docs
+API: http://127.0.0.1:8000, документация Swagger: http://127.0.0.1:8000/docs
 
-Frontend'ni ochish — yangi terminalda, repozitoriya ildizidan:
+Открыть фронтенд — в новом терминале, из корня репозитория:
 
 ```bash
 cd frontend
@@ -100,12 +105,14 @@ cd frontend
 python -m http.server 5500
 ```
 
-Brauzerda: http://localhost:5500 (telefonda sinash uchun: `http://<kompyuter-IP>:5500`
-va `app.js` dagi `API_URL` ni `http://<kompyuter-IP>:8000` ga o'zgartiring,
-uvicorn'ni esa `--host 0.0.0.0` bilan ishga tushiring).
-`index.html` ni to'g'ridan-to'g'ri ikki marta bosib ochish ham ishlaydi, chunki CORS `*` ga ruxsat bergan.
+В браузере: http://localhost:5500
 
-Testlar (`backend/` ichida):
+Чтобы проверить с телефона в той же сети: запустите uvicorn с `--host 0.0.0.0`,
+в `app.js` замените `API_URL` на `http://<IP-компьютера>:8000` и откройте
+`http://<IP-компьютера>:5500`. Можно открыть `index.html` и двойным кликом —
+CORS разрешён для `*`.
+
+Тесты (внутри `backend/`):
 
 ```bash
 pytest
@@ -113,70 +120,70 @@ pytest
 
 ## API
 
-Barcha summalar butun son, so'mda. Sanalar `YYYY-MM-DD`, oy `YYYY-MM`.
+Все суммы — целые числа в сумах. Даты — `YYYY-MM-DD`, месяц — `YYYY-MM`.
 
-| Metod  | Manzil                       | Vazifasi                                 | Muvaffaqiyat |
-|--------|------------------------------|------------------------------------------|--------------|
-| POST   | `/students`                  | o'quvchi qo'shish                         | 201          |
-| GET    | `/students?group=...`        | o'quvchilar ro'yxati (guruh bo'yicha filtr) | 200        |
-| GET    | `/students/{id}`             | bitta o'quvchi                            | 200          |
-| PATCH  | `/students/{id}`             | o'quvchini qisman o'zgartirish            | 200          |
-| DELETE | `/students/{id}`             | o'quvchini (va to'lovlarini) o'chirish    | 204          |
-| POST   | `/payments`                  | to'lov qo'shish                           | 201          |
-| GET    | `/payments?student_id=X`     | to'lovlar (o'quvchi bo'yicha filtr)       | 200          |
-| GET    | `/debtors?month=YYYY-MM`     | shu oy qarzdorlari                        | 200          |
+| Метод  | Адрес                        | Назначение                                 | Успех |
+|--------|------------------------------|--------------------------------------------|-------|
+| POST   | `/students`                  | создать ученика                            | 201   |
+| GET    | `/students?group=...`        | список учеников (фильтр по группе)         | 200   |
+| GET    | `/students/{id}`             | один ученик                                | 200   |
+| PATCH  | `/students/{id}`             | частичное изменение ученика                | 200   |
+| DELETE | `/students/{id}`             | удалить ученика (вместе с его оплатами)    | 204   |
+| POST   | `/payments`                  | добавить оплату                            | 201   |
+| GET    | `/payments?student_id=X`     | оплаты (фильтр по ученику)                 | 200   |
+| GET    | `/debtors?month=YYYY-MM`     | должники за месяц                          | 200   |
 
-### curl misollari
+### Примеры curl
 
-O'quvchi qo'shish:
+Создать ученика:
 
 ```bash
 curl -X POST http://127.0.0.1:8000/students -H "Content-Type: application/json" -d '{"name": "Aziz Karimov", "phone": "+998901234567", "group": "Ingliz tili A1", "monthly_fee": 400000}'
 ```
 
-O'quvchilar ro'yxati, guruh bo'yicha:
+Список учеников группы:
 
 ```bash
 curl "http://127.0.0.1:8000/students?group=Matematika"
 ```
 
-Bitta o'quvchi:
+Один ученик:
 
 ```bash
 curl http://127.0.0.1:8000/students/1
 ```
 
-O'quvchini o'zgartirish (faqat yuborilgan maydonlar o'zgaradi):
+Изменить ученика (меняются только переданные поля):
 
 ```bash
 curl -X PATCH http://127.0.0.1:8000/students/1 -H "Content-Type: application/json" -d '{"monthly_fee": 450000}'
 ```
 
-O'quvchini o'chirish:
+Удалить ученика:
 
 ```bash
 curl -X DELETE http://127.0.0.1:8000/students/1
 ```
 
-To'lov qo'shish (`date` berilmasa — bugungi sana, Toshkent vaqti):
+Добавить оплату (если `date` не передана — сегодняшняя дата по Ташкенту):
 
 ```bash
 curl -X POST http://127.0.0.1:8000/payments -H "Content-Type: application/json" -d '{"student_id": 2, "amount": 200000, "date": "2026-10-05"}'
 ```
 
-O'quvchining to'lovlari:
+Оплаты ученика:
 
 ```bash
 curl "http://127.0.0.1:8000/payments?student_id=2"
 ```
 
-Oktyabr qarzdorlari:
+Должники за октябрь:
 
 ```bash
 curl "http://127.0.0.1:8000/debtors?month=2026-10"
 ```
 
-Javob namunasi:
+Пример ответа:
 
 ```json
 [
@@ -192,87 +199,89 @@ Javob namunasi:
 ]
 ```
 
-### Xatolar
+### Ошибки
 
-Har qanday xato bir xil ko'rinishda qaytadi:
+Любая ошибка возвращается в одном формате (текст `message` — на узбекском):
 
 ```json
 {"error": {"code": "not_found", "message": "ID=999 bo'lgan o'quvchi topilmadi"}}
 ```
 
-| Status | code               | Qachon                                                                 |
-|--------|--------------------|------------------------------------------------------------------------|
-| 400    | `invalid_month`    | `month` `YYYY-MM` formatida emas                                       |
-| 400    | `empty_update`     | PATCH tanasi bo'sh (`{}`)                                              |
-| 404    | `not_found`        | o'quvchi topilmadi (shu jumladan mavjud bo'lmagan `student_id` ga to'lov) yoki noma'lum manzil |
-| 405    | `method_not_allowed` | manzil bu HTTP metodni qo'llamaydi                                   |
-| 422    | `validation_error` | Pydantic validatsiyasi: summa <= 0, telefon formati, sana ISO emas, majburiy maydon yo'q, noto'g'ri JSON |
-| 500    | `internal_error`   | kutilmagan server xatosi (tafsilot logga yoziladi, mijozga ko'rsatilmaydi) |
+| Статус | code                 | Когда                                                                  |
+|--------|----------------------|------------------------------------------------------------------------|
+| 400    | `invalid_month`      | `month` не в формате `YYYY-MM`                                         |
+| 400    | `empty_update`       | пустое тело PATCH (`{}`)                                               |
+| 404    | `not_found`          | ученик не найден (в т.ч. оплата на несуществующий `student_id`) или неизвестный адрес |
+| 405    | `method_not_allowed` | адрес не поддерживает этот HTTP-метод                                  |
+| 422    | `validation_error`   | ошибка валидации Pydantic: сумма <= 0, формат телефона, дата не ISO, нет обязательного поля, невалидный JSON |
+| 500    | `internal_error`     | непредвиденная ошибка сервера (детали пишутся в лог, клиенту не показываются) |
 
-## Qabul qilingan qarorlar va chegaraviy holatlar
+## Принятые решения и граничные случаи
 
-**Qarzdor kim.** Tanlangan oyda to'lagan summasi o'z oylik summasidan kam
-bo'lgan o'quvchi. `debt = monthly_fee - paid`.
+**Кто должник.** Ученик, который за выбранный месяц заплатил меньше своей
+месячной суммы. `debt = monthly_fee - paid`.
 
-- **Oy davomida umuman to'lamagan o'quvchi** — qarzdor, `paid = 0`,
-  `debt = monthly_fee`. Ro'yxatga LEFT JOIN bilan barcha o'quvchilar olinadi,
-  shuning uchun to'lovi yo'qlar tushib qolmaydi.
-- **Oylikdan ko'p to'lagan o'quvchi** — qarzdor emas (qarz manfiy bo'lmaydi,
-  `max(fee - paid, 0)`). Ortiqcha summa keyingi oyga o'tkazilmaydi: har oy
-  mustaqil hisoblanadi. Sabab: balans/avans yuritish alohida hisob jadvali
-  talab qiladi, sodda variant esa tushunarli va testlash oson.
-- **Bir oyda bir necha marta to'lov** — shu oydagi barcha to'lovlar qo'shiladi
-  (`SUM(amount)`), keyin oylik bilan solishtiriladi.
-- **`month` noto'g'ri formatda** (`2026-13`, `2026/10`, `abc`) — `400 invalid_month`.
-  Bu Pydantic tana validatsiyasi emas, balki query parametrning ma'nosini
-  tekshirish, shuning uchun 422 emas, 400.
-- **`month` berilmasa** — joriy oy olinadi (Toshkent vaqti bo'yicha). Bu
-  frontend'siz tez tekshirish uchun qulay.
-- **Vaqt zonasi** — barcha "bugun" va "joriy oy" Asia/Tashkent (UTC+5)
-  bo'yicha. To'lov sanasi vaqtsiz kalendar kuni (`DATE`) sifatida saqlanadi va
-  Toshkent sanasi deb qabul qilinadi; oy chegarasi `[1-kun, keyingi oyning 1-kuni)`.
-  O'zbekistonda yozgi vaqt yo'q, shuning uchun `zoneinfo` + `tzdata` o'rniga
-  qat'iy `+5` siljish ishlatildi (bitta kutubxona kam). Frontend ham joriy oy va
-  bugungi sanani `Intl` orqali Toshkent vaqtida hisoblaydi — foydalanuvchi
-  brauzeri boshqa zonada bo'lsa ham natija bir xil.
-- **O'quvchi o'chirilganda** — uning to'lovlari ham o'chadi (`ON DELETE CASCADE`
-  + ORM `cascade`). Sabab: egasiz to'lovlar qarzdorlar hisobida va ro'yxatlarda
-  ishlatilmaydi, "soft delete" esa har bir so'rovga qo'shimcha filtr talab
-  qiladi — topshiriq uchun soddarog'i tanlandi (kamchiligi pastdagi
-  "yaxshilash" bo'limida).
-- **Yangi qo'shilgan o'quvchi** — o'quvchi qo'shilgan sana (`created_on`)
-  avtomatik saqlanadi; u qo'shilishidan oldingi oylar uchun qarzdor
-  hisoblanmaydi (aks holda oktyabrda kelgan o'quvchi mart oyi qarzdori bo'lib
-  chiqardi). Qo'shilgan oyning o'zida esa to'liq oylik talab qilinadi.
-- **Pul** — butun son (so'm), `float` emas: yaxlitlash xatolari bo'lmaydi.
-  Summa `0 < x <= 100 000 000`; `"50000"` (matn) yoki `true` qabul qilinmaydi.
-- **Sana** — faqat `YYYY-MM-DD` matni (unix timestamp va boshqa formatlar
-  rad etiladi), `2026-02-30` kabi mavjud bo'lmagan sana va kelajakdagi sana
-  qabul qilinmaydi. Berilmasa — bugun.
-- **Telefon** — `+998XXXXXXXXX`. Bo'sh joy, `-` va qavslar olib tashlanadi,
-  `998...` boshiga `+` qo'shiladi. Telefon unikal emas: aka-uka bitta ota-ona
-  raqamini yozishi mumkin.
-- **PATCH** — faqat yuborilgan maydonlar o'zgaradi; `{}` → 400,
-  `{"name": null}` → 422, noma'lum maydon → 422.
-- **Oylik summa o'zgartirilsa** — o'tgan oylar ham yangi summa bilan
-  hisoblanadi (summa tarixi saqlanmaydi; quyida yaxshilash sifatida).
-- **Qarzdorlar tartibi** — eng katta qarz tepada, teng bo'lsa ism bo'yicha.
-- **Jadvallar** — ilova ishga tushganda `create_all` bilan yaratiladi
-  (Alembic o'rniga — sodda).
+- **Ученик, который за месяц не платил вообще** — должник, `paid = 0`,
+  `debt = monthly_fee`. Ученики берутся через LEFT JOIN, поэтому те, у кого
+  нет оплат, не выпадают из списка.
+- **Ученик заплатил больше месячной суммы** — не должник (долг не бывает
+  отрицательным: `max(fee - paid, 0)`). Переплата на следующий месяц не
+  переносится: каждый месяц считается отдельно. Причина: вести баланс/аванс
+  требует отдельной таблицы движений, а простой вариант понятнее и легче
+  тестируется.
+- **Несколько оплат за месяц** — все оплаты месяца суммируются
+  (`SUM(amount)`) и потом сравниваются с месячной суммой.
+- **`month` в неверном формате** (`2026-13`, `2026/10`, `abc`) — `400 invalid_month`.
+  Это не валидация тела запроса Pydantic, а проверка смысла query-параметра,
+  поэтому 400, а не 422.
+- **`month` не передан** — берётся текущий месяц по ташкентскому времени.
+  Удобно для быстрой проверки без фронтенда.
+- **Часовой пояс** — все «сегодня» и «текущий месяц» считаются по
+  Asia/Tashkent (UTC+5). Дата оплаты хранится как календарный день без
+  времени (`DATE`) и считается ташкентской датой; границы месяца —
+  `[1-е число, 1-е число следующего месяца)`. В Узбекистане нет перехода на
+  летнее время, поэтому вместо `zoneinfo` + `tzdata` используется
+  фиксированное смещение `+5` (на одну зависимость меньше). Фронтенд тоже
+  считает текущий месяц и сегодняшнюю дату через `Intl` по Ташкенту —
+  результат одинаковый, даже если браузер в другом часовом поясе.
+- **Удаление ученика** — его оплаты удаляются вместе с ним
+  (`ON DELETE CASCADE` + ORM `cascade`). Причина: оплаты без ученика не
+  участвуют ни в расчёте долгов, ни в списках, а «мягкое удаление» требует
+  дополнительного фильтра в каждом запросе — для тестового задания выбран
+  более простой вариант (минус описан в разделе «Что бы я улучшил»).
+- **Новый ученик** — дата добавления (`created_on`) сохраняется
+  автоматически; за месяцы до добавления ученик должником не считается
+  (иначе ученик, пришедший в октябре, оказался бы должником за март). За сам
+  месяц добавления требуется полная сумма.
+- **Деньги** — целые числа (сумы), не `float`: нет ошибок округления.
+  Сумма `0 < x <= 100 000 000`; `"50000"` (строка) или `true` не принимаются.
+- **Дата** — только строка `YYYY-MM-DD` (unix timestamp и другие форматы
+  отклоняются); несуществующая дата вроде `2026-02-30` и дата в будущем не
+  принимаются. Если не передана — сегодня.
+- **Телефон** — `+998XXXXXXXXX`. Пробелы, `-` и скобки убираются, к `998...`
+  добавляется `+`. Телефон не уникален: братья/сёстры могут указать номер
+  одного родителя.
+- **PATCH** — меняются только переданные поля; `{}` → 400,
+  `{"name": null}` → 422, неизвестное поле → 422.
+- **Если изменить месячную сумму** — прошлые месяцы тоже пересчитываются по
+  новой сумме (история сумм не хранится; см. улучшения ниже).
+- **Порядок должников** — сначала самый большой долг, при равенстве — по имени.
+- **Таблицы** — создаются при старте приложения через `create_all`
+  (вместо Alembic — проще).
 
-## Yana bir hafta vaqt bo'lsa nimani yaxshilardim
+## Что бы я улучшил, будь у меня ещё неделя
 
-1. **Alembic migratsiyalari** — hozirgi `create_all` mavjud jadvalga yangi
-   ustun qo'shmaydi, ya'ni modelni o'zgartirsam ishlab turgan bazani qo'lda
-   o'chirishga to'g'ri keladi.
-2. **Oylik summa tarixi (`student_fees` jadvali: summa + amal qilish sanasi)** —
-   hozir PATCH bilan summa oshirilsa, o'tgan oylar qarzi ham yangi summa
-   bilan qayta hisoblanib, eski hisobotlar o'zgarib ketadi.
-3. **O'quvchini arxivlash (soft delete, `archived_at`)** — hozir o'quvchi
-   o'chirilsa uning to'lovlari ham yo'qoladi va o'tgan oylar tushumi
-   hisobotda kamayib qoladi.
-4. **Admin autentifikatsiyasi (login + token)** — hozir API manzilini bilgan
-   har kim to'lov qo'shishi yoki o'quvchini o'chirishi mumkin.
-5. **To'lovni ikki marta yozilishdan himoya (`Idempotency-Key` sarlavhasi)** —
-   sekin internetda so'rov qayta yuborilsa bir xil to'lov ikki marta saqlanadi
-   va o'quvchi ortiqcha to'lagan bo'lib ko'rinadi.
+1. **Миграции Alembic** — текущий `create_all` не добавляет новые колонки в
+   существующую таблицу, то есть при изменении модели рабочую БД пришлось бы
+   удалять вручную.
+2. **История месячной суммы (таблица `student_fees`: сумма + дата начала
+   действия)** — сейчас, если повысить сумму через PATCH, долги за прошлые
+   месяцы пересчитываются по новой сумме и старые отчёты меняются.
+3. **Архивирование ученика (мягкое удаление, `archived_at`)** — сейчас при
+   удалении ученика пропадают и его оплаты, и выручка за прошлые месяцы в
+   отчётах уменьшается.
+4. **Аутентификация администратора (логин + токен)** — сейчас любой, кто знает
+   адрес API, может добавить оплату или удалить ученика.
+5. **Защита от двойной записи оплаты (заголовок `Idempotency-Key`)** — при
+   медленном интернете повторно отправленный запрос сохранит одну и ту же
+   оплату дважды, и ученик будет выглядеть переплатившим.
